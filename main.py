@@ -6,13 +6,9 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-def stage_all_changes():
-    """Stage all changes in the repository."""
-    subprocess.run(['git', 'add', '.'])
-
 def get_git_diffs():
     """Get diffs of staged changes in the repository."""
-    stage_all_changes()  # Ensure all changes are staged
+    subprocess.run(['git', 'add', '.']) # Ensure all changes are staged
     diff_output = subprocess.check_output(['git', 'diff', '--cached']).decode()
     return diff_output
 
