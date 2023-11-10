@@ -115,12 +115,13 @@ def main():
     print("Detected changes:")
     print(diffs)
 
-    suggested_message_json = generate_commit_message(diffs)
-    suggested_message = format_commit_message_from_json(suggested_message_json)
-    print("\nSuggested commit message:")
-    print(suggested_message)
-
     while True:
+        # Generate or regenerate the commit message based on diffs
+        suggested_message_json = generate_commit_message(diffs)
+        suggested_message = format_commit_message_from_json(suggested_message_json)
+        print("\nSuggested commit message:")
+        print(suggested_message)
+
         user_decision = input("Choose an option (1-3):\n"
                               "1. Use the current commit message\n"
                               "2. Generate a new commit message\n"
@@ -131,18 +132,13 @@ def main():
             commit_message = suggested_message
             break
         elif user_decision == '2':
-            commit_message = generate_commit_message(diffs)
+            # This will loop back and regenerate the commit message
+            continue
         elif user_decision == '3':
             commit_message = edit_message_in_editor(suggested_message)
             break
         else:
             print("Invalid choice. Please enter 1, 2, or 3.")
-
-    # user_decision = input("Are you satisfied with this commit message? (yes/no): ").strip().lower()
-    # if user_decision == 'no':
-    #     commit_message = edit_message_in_editor(suggested_message)
-    # else:
-    #     commit_message = suggested_message
 
     # Committing the changes
     subprocess.run(['git', 'add', '.'])
