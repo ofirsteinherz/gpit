@@ -76,7 +76,7 @@ def main():
     print("Changes committed to master branch.")
 
     # Pushing the changes to the remote master branch
-    subprocess.run(['git', 'push', 'origin', 'master'])
+    subprocess.run(['git', 'push', 'origin', 'main'])
     print("Changes pushed to the remote master branch.")
 
 if __name__ == "__main__":
