@@ -75,21 +75,9 @@ def main():
     subprocess.run(['git', 'commit', '-m', commit_message])
     print("Changes committed to master branch.")
 
+    # Pushing the changes to the remote master branch
+    subprocess.run(['git', 'push', 'origin', 'master'])
+    print("Changes pushed to the remote master branch.")
+
 if __name__ == "__main__":
     main()
-
-# suggested_message = generate_commit_message(changes)
-# print("\nSuggested commit message:")
-# print(suggested_message)
-
-# user_decision = input("Do you want to modify this suggestion? (yes/no): ").strip().lower()
-# if user_decision == 'yes':
-#     custom_message = input("Enter your commit message: ").strip()
-#     commit_message = custom_message or suggested_message
-# else:
-#     commit_message = suggested_message
-
-# # Committing the changes
-# subprocess.run(['git', 'add', '.'])
-# subprocess.run(['git', 'commit', '-m', commit_message])
-# print("Changes committed to master branch.")
