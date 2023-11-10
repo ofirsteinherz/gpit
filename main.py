@@ -17,27 +17,36 @@ def get_git_diffs():
     return diff_output
 
 def generate_commit_message(diffs):
-    """Generate a commit message using GPT-4."""
+    """Generate a commit message using GPT-4 and format the response as JSON."""
     openai_api_key = os.getenv("OPENAI_API_KEY")
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {openai_api_key}'
     }
 
-    commit_guideline = """
-        Short (72 chars or less) summary
+    prompt = f"""
+        Create a commit message for the following changes, in JSON format with a message and bullet points:
 
-        - Bullet points are okay, too.
-        - Typically a hyphen or asterisk is used for the bullet, followed by a
-        single space. Use a hanging indent.
+        {diffs}
+
+        Format the response like this:
+        {{
+        "message": "<message>",
+        "bullets": ["<bullet1>", "<bullet2>", ...]
+        }}
+
+        Be concise and on-point, without providing excess information.
     """
 
     data = {
         "model": "gpt-4-1106-preview",
         "messages": [
-            {"role": "system", "content": f"You are an assistant that suggests commit messages based on code changes.\n{commit_guideline}"},
-            {"role": "user", "content": f"Here are some changes:\n\n{diffs}\n\nCan you suggest a good commit message? make sure to follow the guideline, do not provide anything more."}
-        ]
+            {"role": "system", "content": "You are an assistant, and you only reply with JSON."},
+            {"role": "user", "content": prompt}
+        ],
+        "response_format": {
+            "type": "json_object"
+        }
     }
 
     response = requests.post(
@@ -47,8 +56,24 @@ def generate_commit_message(diffs):
     )
 
     response_json = response.json()
-    latest_message = response_json['choices'][0]['message']['content']
-    return latest_message.strip()
+    response_text = response_json['choices'][0]['message']['content']
+
+    try:
+        # Assuming the response_text is a string in JSON format
+        formatted_response = json.loads(response_text)
+    except json.JSONDecodeError:
+        # Fallback in case the response isn't in the expected JSON format
+        formatted_response = {"message": "Failed to parse response", "bullets": []}
+
+    return formatted_response
+
+def format_commit_message_from_json(commit_json):
+    """Format the commit message from JSON to a string."""
+    message_str = commit_json.get("message", "")
+    bullets = commit_json.get("bullets", [])
+    
+    formatted_bullets = "\n".join(f"- {bullet}" for bullet in bullets)
+    return f"{message_str}\n\n{formatted_bullets}"
 
 def main():
     unpushed_commits = check_for_unpushed_commits()
@@ -73,7 +98,8 @@ def main():
     print("Detected changes:")
     print(diffs)
 
-    suggested_message = generate_commit_message(diffs)
+    suggested_message_json = generate_commit_message(diffs)
+    suggested_message = format_commit_message_from_json(suggested_message_json)
     print("\nSuggested commit message:")
     print(suggested_message)
 
