@@ -93,61 +93,61 @@ def edit_message_in_editor(message):
     return edited_message
 
 def main():
+    print("\n🔍 Checking for unpushed commits...")
     unpushed_commits = check_for_unpushed_commits()
     if unpushed_commits:
-        print("There are unpushed commits:")
+        print("\n========================================")
+        print("🚧 There are unpushed commits:\n")
         print(unpushed_commits)
-        user_decision = input("Do you want to push these commits? (yes/no): ").strip().lower()
+        user_decision = input("\n🚀 Do you want to push these commits? (yes/no): ").strip().lower()
 
         if user_decision == 'yes':
             subprocess.run(['git', 'push', 'origin', 'main'])
-            print("Unpushed commits have been pushed to the remote main branch.")
+            print("\n✅ Unpushed commits have been pushed to the remote main branch.")
         else:
-            # Reset the HEAD to the last pushed state, keeping the changes in the working directory
             subprocess.run(['git', 'reset', '--soft', 'origin/main'])
-            print("Unpushed commits have been reset. Changes are kept in the working directory.")
+            print("\n🔄 Unpushed commits have been reset. Changes are kept in the working directory.")
 
+    print("\n🔍 Checking for local changes...")
     diffs = get_git_diffs()
     if not diffs:
-        print("No changes to commit.")
+        print("\n✨ No changes to commit. Your repository is up to date!")
         return
 
-    print("Detected changes:")
+    print("\n========================================")
+    print("📝 Detected changes:\n")
     print(diffs)
 
     while True:
-        # Generate or regenerate the commit message based on diffs
         suggested_message_json = generate_commit_message(diffs)
         suggested_message = format_commit_message_from_json(suggested_message_json)
-        print("\nSuggested commit message:")
+        print("\n========================================")
+        print("📬 Suggested commit message:")
         print(suggested_message)
 
-        user_decision = input("Choose an option (1-3):\n"
-                              "1. Use the current commit message\n"
-                              "2. Generate a new commit message\n"
-                              "3. Edit the current commit message\n"
+        print("\n👇 Choose an action:")
+        user_decision = input("1️⃣ Use the current commit message\n"
+                              "2️⃣ Generate a new commit message\n"
+                              "3️⃣ Edit the current commit message\n"
                               "Your choice (1/2/3): ").strip()
 
         if user_decision == '1':
             commit_message = suggested_message
             break
         elif user_decision == '2':
-            # This will loop back and regenerate the commit message
             continue
         elif user_decision == '3':
             commit_message = edit_message_in_editor(suggested_message)
             break
         else:
-            print("Invalid choice. Please enter 1, 2, or 3.")
+            print("❌ Invalid choice. Please enter 1, 2, or 3.")
 
-    # Committing the changes
     subprocess.run(['git', 'add', '.'])
     subprocess.run(['git', 'commit', '-m', commit_message])
-    print("Changes committed to main branch.")
+    print("\n🎉 Changes committed to the main branch.")
 
-    # Pushing the changes to the remote main branch
     subprocess.run(['git', 'push', 'origin', 'main'])
-    print("Changes pushed to the remote main branch.")
+    print("\n🌍 Changes pushed to the remote main branch.")
 
 if __name__ == "__main__":
     main()
