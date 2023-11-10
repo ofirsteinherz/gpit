@@ -1,5 +1,6 @@
 import os
 import subprocess
+import tempfile
 import requests
 import json
 
@@ -75,6 +76,22 @@ def format_commit_message_from_json(commit_json):
     formatted_bullets = "\n".join(f"- {bullet}" for bullet in bullets)
     return f"{message_str}\n\n{formatted_bullets}"
 
+def edit_message_in_editor(message):
+    """Open the message in a text editor (Nano) for editing."""
+    with tempfile.NamedTemporaryFile(suffix=".tmp", delete=False, mode='w+') as tf:
+        tf_path = tf.name
+        tf.write(message)
+        tf.flush()
+
+    editor = os.getenv('EDITOR', 'nano')  # Use Nano or the default editor set in the environment
+    subprocess.call([editor, tf_path])
+
+    with open(tf_path, "r") as tf:
+        edited_message = tf.read()
+
+    os.remove(tf_path)  # Clean up the temporary file
+    return edited_message
+
 def main():
     unpushed_commits = check_for_unpushed_commits()
     if unpushed_commits:
@@ -103,10 +120,9 @@ def main():
     print("\nSuggested commit message:")
     print(suggested_message)
 
-    user_decision = input("Do you want to modify this suggestion? (yes/no): ").strip().lower()
-    if user_decision == 'yes':
-        custom_message = input("Enter your commit message: ").strip()
-        commit_message = custom_message or suggested_message
+    user_decision = input("Are you satisfied with this commit message? (yes/no): ").strip().lower()
+    if user_decision == 'no':
+        commit_message = edit_message_in_editor(suggested_message)
     else:
         commit_message = suggested_message
 
