@@ -13,8 +13,16 @@ def check_for_unpushed_commits():
 
 def get_git_diffs():
     """Get diffs of staged changes in the repository."""
-    subprocess.run(['git', 'add', '.']) # Ensure all changes are staged
-    diff_output = subprocess.check_output(['git', 'diff', '--cached']).decode()
+    subprocess.run(['git', 'add', '.'])  # Ensure all changes are staged
+    changed_files = subprocess.check_output(['git', 'diff', '--cached', '--name-only']).decode().splitlines()
+    diff_output = ""
+
+    for file in changed_files:
+        diff_output += f"\n📄 {file}\n"
+        diff_output += "-" * len(file) + "\n"
+        file_diff = subprocess.check_output(['git', 'diff', '--cached', file]).decode()
+        diff_output += file_diff + "\n"
+
     return diff_output
 
 def generate_commit_message(diffs):
@@ -144,10 +152,10 @@ def main():
 
     subprocess.run(['git', 'add', '.'])
     subprocess.run(['git', 'commit', '-m', commit_message])
-    print("\n🎉 Changes committed to the main branch.")
+    print("🎉 Changes committed to the main branch.\n")
 
     subprocess.run(['git', 'push', 'origin', 'main'])
-    print("\n🌍 Changes pushed to the remote main branch.")
+    print("🌍 Changes pushed to the remote main branch.")
 
 if __name__ == "__main__":
     main()
