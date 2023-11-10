@@ -36,7 +36,7 @@ def generate_commit_message(diffs):
         "model": "gpt-4-1106-preview",
         "messages": [
             {"role": "system", "content": f"You are an assistant that suggests commit messages based on code changes.\n{commit_guideline}"},
-            {"role": "user", "content": f"Here are some changes:\n\n{diffs}\n\nCan you suggest a good commit message? make sure to follow the guideline (short summery and bullets), do not provide anything more."}
+            {"role": "user", "content": f"Here are some changes:\n\n{diffs}\n\nCan you suggest a good commit message? make sure to follow the guideline, do not provide anything more."}
         ]
     }
 
