@@ -34,17 +34,30 @@ def generate_commit_message(diffs):
     }
 
     prompt = f"""
-        Create a commit message for the following changes, in JSON format with a message and bullet points:
+        I need a detailed and specific commit message for the following Git code changes.
+        The message should reflect the actual code modifications, improvements, or fixes made.
+        Please provide the message in JSON format, with distinct sections for a summary
+        message, bullet points detailing specific changes, and any necessary warnings about
+        the code, such as potential issues or areas needing attention.
 
+        Changes:
         {diffs}
 
-        Format the response like this:
+        Please format the response as follows:
         {{
-        "message": "<message>",
-        "bullets": ["<bullet1>", "<bullet2>", ...]
+            "message": "A concise summary, specifically describing the key change or improvement",
+            "bullets": [
+                "Specific detail about a particular code change, including file and function names if applicable",
+                "Description of another specific change, noting how it affects the functionality or structure of the code",
+                ...
+            ],
+            "warnings": [
+                "Any warnings or notes of caution about specific parts of the changes, such as areas that need further testing or review",
+                ...
+            ]
         }}
 
-        Be concise and on-point, without providing excess information.
+        The response should be technically specific, aligning closely with the provided code changes, and avoiding generic or placeholder text.
     """
 
     data = {
