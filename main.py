@@ -6,6 +6,10 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
+def check_for_unpushed_commits():
+    """Check for commits that haven't been pushed to the remote repository."""
+    return subprocess.check_output(['git', 'log', '--branches', '--not', '--remotes']).decode().strip()
+
 def get_git_diffs():
     """Get diffs of staged changes in the repository."""
     subprocess.run(['git', 'add', '.']) # Ensure all changes are staged
@@ -47,6 +51,20 @@ def generate_commit_message(diffs):
     return latest_message.strip()
 
 def main():
+    unpushed_commits = check_for_unpushed_commits()
+    if unpushed_commits:
+        print("There are unpushed commits:")
+        print(unpushed_commits)
+        user_decision = input("Do you want to push these commits? (yes/no): ").strip().lower()
+
+        if user_decision == 'yes':
+            subprocess.run(['git', 'push', 'origin', 'main'])
+            print("Unpushed commits have been pushed to the remote main branch.")
+        else:
+            # Reset the HEAD to the last pushed state, keeping the changes in the working directory
+            subprocess.run(['git', 'reset', '--soft', 'origin/main'])
+            print("Unpushed commits have been reset. Changes are kept in the working directory.")
+
     diffs = get_git_diffs()
     if not diffs:
         print("No changes to commit.")
@@ -69,11 +87,11 @@ def main():
     # Committing the changes
     subprocess.run(['git', 'add', '.'])
     subprocess.run(['git', 'commit', '-m', commit_message])
-    print("Changes committed to master branch.")
+    print("Changes committed to main branch.")
 
-    # Pushing the changes to the remote master branch
+    # Pushing the changes to the remote main branch
     subprocess.run(['git', 'push', 'origin', 'main'])
-    print("Changes pushed to the remote master branch.")
+    print("Changes pushed to the remote main branch.")
 
 if __name__ == "__main__":
     main()
