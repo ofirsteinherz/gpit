@@ -52,12 +52,13 @@ def generate_commit_message(diffs):
                 ...
             ],
             "warnings": [
-                "Any warnings or notes of caution about specific parts of the changes, such as areas that need further testing or review",
+                "Optional. Any warnings or notes of caution about specific parts of the changes, such as areas that need further testing or review",
                 ...
             ]
         }}
 
         The response should be technically specific, aligning closely with the provided code changes, and avoiding generic or placeholder text.
+        Be concise and on-point, without providing excess information.
     """
 
     data = {
@@ -113,6 +114,14 @@ def edit_message_in_editor(message):
     os.remove(tf_path)  # Clean up the temporary file
     return edited_message
 
+def print_warnings(warnings):
+    """Prints warnings in a formatted manner."""
+    if warnings:
+        for warning in warnings:
+            print(f"- {warning}")
+    else:
+        print("\n✅ No warnings.")
+
 def main():
     print("\n🔍 Checking for unpushed commits...")
     unpushed_commits = check_for_unpushed_commits()
@@ -139,18 +148,29 @@ def main():
     print("📝 Detected changes:\n")
     print(diffs)
 
+    show_warnings = True
+
     while True:
         suggested_message_json = generate_commit_message(diffs)
         suggested_message = format_commit_message_from_json(suggested_message_json)
+
+        # Print warnings only on the first run or when a new message is not generated
+        if show_warnings or not warnings:
+            print("\n========================================")
+            print("\n🚨 Warnings:")
+            warnings = suggested_message_json.get("warnings", [])
+            print_warnings(warnings)
+            show_warnings = False
+
         print("\n========================================")
         print("📬 Suggested commit message:")
         print(suggested_message)
 
         print("\n👇 Choose an action:")
         user_decision = input("1️⃣ Use the current commit message\n"
-                              "2️⃣ Generate a new commit message\n"
-                              "3️⃣ Edit the current commit message\n"
-                              "Your choice (1/2/3): ").strip()
+                            "2️⃣ Generate a new commit message\n"
+                            "3️⃣ Edit the current commit message\n"
+                            "Your choice (1/2/3): ").strip()
 
         if user_decision == '1':
             commit_message = suggested_message
