@@ -52,7 +52,7 @@ def generate_commit_message(diffs):
                 ...
             ],
             "warnings": [
-                "Optional. Any warnings or notes of caution about specific parts of the changes, such as areas that need further testing or review",
+                "Optional. Necessary warnings or notes of caution about specific parts of the changes, such as areas that need further testing or review",
                 ...
             ]
         }}
