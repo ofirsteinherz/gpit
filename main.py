@@ -120,11 +120,29 @@ def main():
     print("\nSuggested commit message:")
     print(suggested_message)
 
-    user_decision = input("Are you satisfied with this commit message? (yes/no): ").strip().lower()
-    if user_decision == 'no':
-        commit_message = edit_message_in_editor(suggested_message)
-    else:
-        commit_message = suggested_message
+    while True:
+        user_decision = input("Choose an option (1-3):\n"
+                              "1. Use the current commit message\n"
+                              "2. Generate a new commit message\n"
+                              "3. Edit the current commit message\n"
+                              "Your choice (1/2/3): ").strip()
+
+        if user_decision == '1':
+            commit_message = suggested_message
+            break
+        elif user_decision == '2':
+            commit_message = generate_commit_message(diffs)
+        elif user_decision == '3':
+            commit_message = edit_message_in_editor(suggested_message)
+            break
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
+    # user_decision = input("Are you satisfied with this commit message? (yes/no): ").strip().lower()
+    # if user_decision == 'no':
+    #     commit_message = edit_message_in_editor(suggested_message)
+    # else:
+    #     commit_message = suggested_message
 
     # Committing the changes
     subprocess.run(['git', 'add', '.'])
