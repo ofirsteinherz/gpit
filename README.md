@@ -47,6 +47,3 @@ pip install requests python-dotenv
 
 ## Contributing
 Contributions to this project are welcome! Please fork the repository and submit a pull request with your proposed changes.
-
-## License
-[MIT License](LICENSE)
