@@ -1,5 +1,5 @@
-# Git Automation Tool
-> Effortless Git Integration with AI-Powered Commit Assistance
+# GPiT
+> Effortless Git Integration with GPT-Powered Commit Assistance
 
 ## Overview
 This tool is designed to automate several common Git operations, enhancing the standard Git workflow with additional features. It helps in managing unpushed commits, checking for local changes, generating commit messages using OpenAI's GPT-4 API, editing commit messages, and handling the push operation to a remote repository.
@@ -14,7 +14,7 @@ This tool is designed to automate several common Git operations, enhancing the s
 ## Installation
 Clone this repository to your local machine using:
 ```bash
-git clone https://github.com/ofirsteinherz/git-auto-commit
+git clone https://github.com/ofirsteinherz/gpit
 cd git-auto-commit
 ```
 
