@@ -12,28 +12,29 @@ This tool is designed to automate several common Git operations, enhancing the s
 - 🚀 **Stage, Commit, and Push**: Automates the process of staging changes, committing them with a chosen message, and pushing to the remote repository.
 
 ## Installation
-Clone this repository to your local machine using:
+GPIT can be installed directly from PyPI:
+
 ```bash
-git clone https://github.com/ofirsteinherz/gpit
-cd git-auto-commit
+pip install gpit
 ```
 
-Ensure that you have Python installed on your system. This tool requires Python 3.x.
+This tool requires Python 3.x. Make sure you have Python installed on your system.
 
-## Usage
-Navigate to your Git repository and run the script:
-```bash
-python main.py
-```
-
-Follow the on-screen prompts to manage your Git operations.
-
-## Configuration
+## Setting Up OpenAI API Key
 Before using the tool, make sure to set your OpenAI API key as an environment variable:
 ```bash
 export OPENAI_API_KEY='your_openai_api_key'
 ```
 Alternatively, you can set it in a `.env` file in the same directory as the script.
+
+## Usage
+Once installed, you can run GPIT from any Git repository on your system. Simply use the following command:
+
+```bash
+gpit
+```
+
+Follow the on-screen prompts to manage your Git operations.
 
 ## Dependencies
 - Git
