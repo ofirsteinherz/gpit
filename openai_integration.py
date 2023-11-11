@@ -25,14 +25,14 @@ def generate_commit_message(diffs):
 
         Please format the response as follows:
         {{
-            "message": "A concise summary, specifically describing the key change or improvement",
+            "message": "A concise summary, specifically describing the key change or improvement. Must be 72 chars or less",
             "bullets": [
                 "Specific detail about a particular code change, including file and function names if applicable",
                 "Description of another specific change, noting how it affects the functionality or structure of the code",
                 ...
             ],
             "warnings": [
-                "Optional. Necessary warnings or notes of caution about specific parts of the changes, such as areas that need further testing or review",
+                "Optional. Necessary warnings or notes of caution about specific parts of the changes",
                 ...
             ]
         }}
