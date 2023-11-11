@@ -1,5 +1,4 @@
-# AutoCommit
-> ## Effortless Git Integration with AI-Powered Commit Assistance
+# Git Automation Tool
 
 ## Overview
 This tool is designed to automate several common Git operations, enhancing the standard Git workflow with additional features. It helps in managing unpushed commits, checking for local changes, generating commit messages using OpenAI's GPT-4 API, editing commit messages, and handling the push operation to a remote repository.
