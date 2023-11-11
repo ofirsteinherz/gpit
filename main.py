@@ -28,35 +28,39 @@ def main():
     print(diffs)
 
     show_warnings = True
-    suggested_message_json = generate_commit_message(diffs)
-    suggested_message = format_commit_message_from_json(suggested_message_json)
 
-    if show_warnings or suggested_message_json.get("warnings"):
-        print("\n========================================")
-        print("\n🚨 Warnings:")
-        warnings = suggested_message_json.get("warnings", [])
-        print_warnings(warnings)
-
-    print("\n========================================")
-    print("📬 Suggested commit message:")
-    print(suggested_message)
-
-    print("\n👇 Choose an action:")
-    user_decision = input("1️⃣ Use the current commit message\n"
-                          "2️⃣ Generate a new commit message\n"
-                          "3️⃣ Edit the current commit message\n"
-                          "Your choice (1/2/3): ").strip()
-
-    if user_decision == '1':
-        commit_message = suggested_message
-    elif user_decision == '2':
+    while True:
         suggested_message_json = generate_commit_message(diffs)
-        commit_message = format_commit_message_from_json(suggested_message_json)
-    elif user_decision == '3':
-        commit_message = edit_message_in_editor(suggested_message)
-    else:
-        print("❌ Invalid choice. Using the current commit message.")
-        commit_message = suggested_message
+        suggested_message = format_commit_message_from_json(suggested_message_json)
+
+        # Print warnings only on the first run or when a new message is not generated
+        if show_warnings or not suggested_message_json.get("warnings", []):
+            print("\n========================================")
+            print("\n🚨 Warnings:")
+            warnings = suggested_message_json.get("warnings", [])
+            print_warnings(warnings)
+            show_warnings = False
+
+        print("\n========================================")
+        print("📬 Suggested commit message:")
+        print(suggested_message)
+
+        print("\n👇 Choose an action:")
+        user_decision = input("1️⃣ Use the current commit message\n"
+                              "2️⃣ Generate a new commit message\n"
+                              "3️⃣ Edit the current commit message\n"
+                              "Your choice (1/2/3): ").strip()
+
+        if user_decision == '1':
+            commit_message = suggested_message
+            break
+        elif user_decision == '2':
+            continue
+        elif user_decision == '3':
+            commit_message = edit_message_in_editor(suggested_message)
+            break
+        else:
+            print("❌ Invalid choice. Please enter 1, 2, or 3.")
 
     stage_changes()
     commit_changes(commit_message)
