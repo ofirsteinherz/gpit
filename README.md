@@ -4,6 +4,8 @@
 ## Overview
 This tool is designed to automate several common Git operations, enhancing the standard Git workflow with additional features. It helps in managing unpushed commits, checking for local changes, generating commit messages using OpenAI's GPT-4 API, editing commit messages, and handling the push operation to a remote repository.
 
+https://github.com/ofirsteinherz/gpit/assets/29001725/e699afd0-f219-48b5-b1e9-563d5f31845a
+
 ## Features
 - 🔍 **Check for Unpushed Commits**: Quickly identify any commits that haven't been pushed to the remote repository.
 - 📝 **Detect Local Changes**: View a summary of local changes that are not yet committed.
