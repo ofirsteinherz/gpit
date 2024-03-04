@@ -37,6 +37,10 @@ Add your export statement:
 ```bash
 export OPENAI_API_KEY="your_openai_api_key_here"
 ```
+Verifying the Variable:
+```bash
+echo $OPENAI_API_KEY
+```
 
 ## Usage
 Once installed, you can run GPIT from any Git repository on your system. Simply use the following command:
