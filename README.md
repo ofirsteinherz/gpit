@@ -28,6 +28,15 @@ Before using the tool, make sure to set your OpenAI API key as an environment va
 export OPENAI_API_KEY='your_openai_api_key'
 ```
 Alternatively, you can set it in a `.env` file in the same directory as the script.
+The most recommended way to save the key is through "Shell Profile Files":
+Open or create the .bashrc file:
+```bash
+nano ~/.bashrc
+```
+Add your export statement:
+```bash
+export OPENAI_API_KEY="your_openai_api_key_here"
+```
 
 ## Usage
 Once installed, you can run GPIT from any Git repository on your system. Simply use the following command:
