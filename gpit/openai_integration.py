@@ -59,6 +59,7 @@ def generate_commit_message(diffs):
     )
 
     response_json = response.json()
+    print(response)
     response_text = response_json['choices'][0]['message']['content']
 
     try:
@@ -68,6 +69,7 @@ def generate_commit_message(diffs):
         # Fallback in case the response isn't in the expected JSON format
         formatted_response = {"message": "Failed to parse response", "bullets": []}
 
+    print(formatted_response)
     return formatted_response
 
 def format_commit_message_from_json(commit_json):
