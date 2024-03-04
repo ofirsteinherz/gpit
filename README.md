@@ -37,6 +37,10 @@ Add your export statement:
 ```bash
 export OPENAI_API_KEY="your_openai_api_key_here"
 ```
+Save and exit. Apply the changes:
+```bash
+source ~/.bashrc
+```
 Verifying the Variable:
 ```bash
 echo $OPENAI_API_KEY
