@@ -2,6 +2,7 @@ import requests
 import json
 import os
 from dotenv import load_dotenv
+from tokencost import calculate_prompt_cost, calculate_completion_cost
 
 load_dotenv()
 
@@ -54,7 +55,14 @@ def generate_commit_message(diffs):
         }
     }
 
-    print(f"Sending resuest to {model}...")
+    # Calculate promt cost
+    prompt_cost = calculate_prompt_cost(prompt, model)
+
+    # Printing prompt cost
+    print(f"📝 Sending request to **{model}**")
+    print(f"💸 Prompt cost: ${prompt_cost:,.5f}")
+
+    # Sending the request
     response = requests.post(
         'https://api.openai.com/v1/chat/completions',
         headers=headers,
@@ -62,8 +70,17 @@ def generate_commit_message(diffs):
     )
 
     response_json = response.json()
-    print(response)
     response_text = response_json['choices'][0]['message']['content']
+
+    # Calculate completion cost
+    completion_cost = calculate_completion_cost(response_text, model)
+
+    # Calculate total cost
+    total_cost = prompt_cost + completion_cost
+
+    # Printing completion cost and total
+    print(f"🔄 Completion cost: ${completion_cost:,.5f}")
+    print(f"💰 Total cost for the operation: ${total_cost:,.5f}")
 
     try:
         # Assuming the response_text is a string in JSON format
@@ -71,8 +88,6 @@ def generate_commit_message(diffs):
     except json.JSONDecodeError:
         # Fallback in case the response isn't in the expected JSON format
         formatted_response = {"message": "Failed to parse response", "bullets": []}
-
-    print(formatted_response)
     return formatted_response
 
 def format_commit_message_from_json(commit_json):

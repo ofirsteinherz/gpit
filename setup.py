@@ -10,6 +10,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'requests',
+        'tokencost'
     ],
     entry_points={
         'console_scripts': [
