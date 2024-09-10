@@ -1,8 +1,30 @@
 import subprocess
 
 def check_for_unpushed_commits():
-    """Check for commits that haven't been pushed to the remote repository."""
-    return subprocess.check_output(['git', 'log', '--branches', '--not', '--remotes']).decode().strip()
+    """Check for commits that haven't been pushed to the remote repository, handle errors gracefully."""
+    try:
+        # First, check if the current branch is tracking a remote branch
+        branch_status = subprocess.check_output(['git', 'status', '-b', '--porcelain']).decode().splitlines()
+        if not any("origin/" in line for line in branch_status):
+            print("⚠️ Warning: Current branch is not tracking any remote branch. Skipping unpushed commits check.")
+            return None
+
+        # If the branch is tracking a remote, check for unpushed commits
+        unpushed_commits = subprocess.check_output(['git', 'log', '--branches', '--not', '--remotes']).decode().strip()
+
+        if unpushed_commits:
+            return unpushed_commits
+        else:
+            return None  # No unpushed commits
+
+    except subprocess.CalledProcessError as e:
+        # Handle specific Git errors, such as remote branch issues
+        print(f"⚠️ Error: Failed to check for unpushed commits. Git command returned error: {e}")
+        return None
+    except Exception as e:
+        # Handle any unexpected errors
+        print(f"⚠️ Unexpected error: {e}")
+        return None
 
 def get_git_diffs():
     """Get diffs of staged changes in the repository."""

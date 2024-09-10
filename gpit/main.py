@@ -5,6 +5,7 @@ from .cli_utilities import edit_message_in_editor, print_warnings
 def main():
     print("\n🔍 Checking for unpushed commits...")
     unpushed_commits = check_for_unpushed_commits()
+
     if unpushed_commits:
         print("\n========================================")
         print("🚧 There are unpushed commits:\n")
@@ -16,7 +17,10 @@ def main():
             print("\n✅ Unpushed commits have been pushed to the remote main branch.")
         else:
             print("\n🔄 Skipping push. Proceeding to check for local changes.")
-
+    elif unpushed_commits is None:
+        print("\n⚠️ Skipping push. Could not check for unpushed commits due to an error.")
+    
+    # Continue with the rest of the script
     print("\n🔍 Checking for local changes...")
     diffs = get_git_diffs()
     if not diffs:
