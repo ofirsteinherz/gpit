@@ -3,7 +3,6 @@ import subprocess
 def get_current_branch():
     """Get the name of the current Git branch."""
     try:
-        # Get the current branch name
         current_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stderr=subprocess.DEVNULL).decode().strip()
         return current_branch
     except subprocess.CalledProcessError as e:
@@ -13,20 +12,34 @@ def get_current_branch():
 def get_default_branch():
     """Get the default branch of the remote repository (e.g., origin/main or origin/master)."""
     try:
-        # Get the default branch from origin/HEAD
+        # Try to get the default branch from origin/HEAD
         default_branch_ref = subprocess.check_output(
             ['git', 'symbolic-ref', 'refs/remotes/origin/HEAD'], stderr=subprocess.DEVNULL
         ).decode().strip()
         default_branch = default_branch_ref.replace('refs/remotes/origin/', '')
         return default_branch
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️ Error: Could not determine the default branch. Git command returned error: {e}")
-        return None
+    except subprocess.CalledProcessError:
+        # If 'origin/HEAD' doesn't exist, fall back to checking for common branches
+        print("⚠️ Warning: Could not determine the default branch from 'origin/HEAD'. Falling back to guess.")
+        try:
+            # Try to list remote branches and guess the default
+            remote_branches = subprocess.check_output(
+                ['git', 'branch', '-r'], stderr=subprocess.DEVNULL
+            ).decode().strip().splitlines()
+            # Heuristic: prefer 'main', otherwise try 'master'
+            if 'origin/main' in remote_branches:
+                return 'main'
+            elif 'origin/master' in remote_branches:
+                return 'master'
+            else:
+                return None
+        except subprocess.CalledProcessError as e:
+            print(f"⚠️ Error: Could not list remote branches. Git command returned error: {e}")
+            return None
 
 def get_upstream_branch():
     """Get the name of the upstream branch (remote branch tracking the current branch)."""
     try:
-        # Get the upstream branch (i.e., origin/main or origin/master)
         upstream_branch = subprocess.check_output(
             ['git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'],
             stderr=subprocess.DEVNULL  # Suppress Git error messages
