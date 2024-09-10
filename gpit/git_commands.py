@@ -75,15 +75,15 @@ def check_for_unpushed_commits():
                 return None
 
         # Check for unpushed commits
-        print(f"🟢 Comparing with branch: {compare_branch}")  # Debugging
+        print(f"🟢 Comparing with branch: {compare_branch}")
         unpushed_commits = subprocess.check_output(['git', 'log', f'{compare_branch}..HEAD']).decode().strip()
         
         if unpushed_commits:
-            print(f"🟢 Unpushed commits found.")  # Debugging
+            print(f"🟢 Unpushed commits found.")
             return unpushed_commits
         else:
-            print(f"🟢 No unpushed commits.")  # Debugging
-            return None  # No unpushed commits
+            print(f"🟢 No unpushed commits.")
+            return ""  # No unpushed commits (use empty string instead of None)
 
     except subprocess.CalledProcessError as e:
         print(f"⚠️ Error: Failed to check for unpushed commits. Git command returned error: {e}")
