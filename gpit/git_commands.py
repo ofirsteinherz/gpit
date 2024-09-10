@@ -4,39 +4,72 @@ def get_current_branch():
     """Get the name of the current Git branch."""
     try:
         # Get the current branch name
-        current_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
+        current_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stderr=subprocess.DEVNULL).decode().strip()
         return current_branch
     except subprocess.CalledProcessError as e:
         print(f"⚠️ Error: Failed to get the current branch name. Git command returned error: {e}")
         return None
 
+def get_default_branch():
+    """Get the default branch of the remote repository (e.g., origin/main or origin/master)."""
+    try:
+        # Get the default branch from origin/HEAD
+        default_branch_ref = subprocess.check_output(
+            ['git', 'symbolic-ref', 'refs/remotes/origin/HEAD'], stderr=subprocess.DEVNULL
+        ).decode().strip()
+        default_branch = default_branch_ref.replace('refs/remotes/origin/', '')
+        return default_branch
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️ Error: Could not determine the default branch. Git command returned error: {e}")
+        return None
+
+def get_upstream_branch():
+    """Get the name of the upstream branch (remote branch tracking the current branch)."""
+    try:
+        # Get the upstream branch (i.e., origin/main or origin/master)
+        upstream_branch = subprocess.check_output(
+            ['git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'],
+            stderr=subprocess.DEVNULL  # Suppress Git error messages
+        ).decode().strip()
+        return upstream_branch
+    except subprocess.CalledProcessError:
+        # If no upstream is set, return None
+        return None
+
 def check_for_unpushed_commits():
-    """Check for commits that haven't been pushed to the remote repository, handling errors gracefully."""
+    """Check for commits that haven't been pushed to the remote repository."""
     try:
         current_branch = get_current_branch()
         if not current_branch:
             print("⚠️ Warning: Could not determine the current branch. Skipping unpushed commits check.")
             return None
-        
-        # Check if the current branch is tracking a remote branch
-        branch_status = subprocess.check_output(['git', 'status', '-b', '--porcelain']).decode().splitlines()
-        if not any(f"origin/{current_branch}" in line for line in branch_status):
-            print(f"⚠️ Warning: Current branch '{current_branch}' is not tracking any remote branch. Skipping unpushed commits check.")
-            return None
 
-        # If the branch is tracking a remote, check for unpushed commits
-        unpushed_commits = subprocess.check_output(['git', 'log', '--branches', '--not', '--remotes']).decode().strip()
+        # Check if the current branch has an upstream branch
+        upstream_branch = get_upstream_branch()
+        if upstream_branch:
+            compare_branch = upstream_branch
+        else:
+            # If no upstream branch, try to use the default branch
+            default_branch = get_default_branch()
+            if default_branch:
+                print(f"⚠️ Warning: Current branch '{current_branch}' has no upstream branch. Comparing with default branch '{default_branch}' instead.")
+                compare_branch = f'origin/{default_branch}'
+            else:
+                print(f"⚠️ Warning: Could not find an upstream or default branch to compare with.")
+                return None
+
+        # Check for unpushed commits
+        unpushed_commits = subprocess.check_output(['git', 'log', f'{compare_branch}..HEAD']).decode().strip()
         
         if unpushed_commits:
             return unpushed_commits
         else:
             return None  # No unpushed commits
+
     except subprocess.CalledProcessError as e:
-        # Handle specific Git errors
         print(f"⚠️ Error: Failed to check for unpushed commits. Git command returned error: {e}")
         return None
     except Exception as e:
-        # Handle unexpected errors
         print(f"⚠️ Unexpected error: {e}")
         return None
 
