@@ -8,6 +8,8 @@ load_dotenv()
 def generate_commit_message(diffs):
     """Generate a commit message using GPT-4 and format the response as JSON."""
     openai_api_key = os.getenv("OPENAI_API_KEY")
+    model = os.getenv("OPENAI_MODEL")
+    
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {openai_api_key}'
@@ -42,7 +44,7 @@ def generate_commit_message(diffs):
     """
 
     data = {
-        "model": "gpt-4-1106-preview",
+        "model": model,
         "messages": [
             {"role": "system", "content": "You are an assistant, and you only reply with JSON."},
             {"role": "user", "content": prompt}
@@ -52,6 +54,7 @@ def generate_commit_message(diffs):
         }
     }
 
+    print(f"Sending resuest to {model}...")
     response = requests.post(
         'https://api.openai.com/v1/chat/completions',
         headers=headers,
