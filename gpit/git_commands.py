@@ -4,6 +4,7 @@ def get_current_branch():
     """Get the name of the current Git branch."""
     try:
         current_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stderr=subprocess.DEVNULL).decode().strip()
+        print(f"🟢 Current branch: {current_branch}")  # Debugging
         return current_branch
     except subprocess.CalledProcessError as e:
         print(f"⚠️ Error: Failed to get the current branch name. Git command returned error: {e}")
@@ -17,15 +18,16 @@ def get_default_branch():
             ['git', 'symbolic-ref', 'refs/remotes/origin/HEAD'], stderr=subprocess.DEVNULL
         ).decode().strip()
         default_branch = default_branch_ref.replace('refs/remotes/origin/', '')
+        print(f"🟢 Default branch found: {default_branch}")  # Debugging
         return default_branch
     except subprocess.CalledProcessError:
-        # If 'origin/HEAD' doesn't exist, fall back to checking for common branches
         print("⚠️ Warning: Could not determine the default branch from 'origin/HEAD'. Falling back to guess.")
         try:
             # Try to list remote branches and guess the default
             remote_branches = subprocess.check_output(
                 ['git', 'branch', '-r'], stderr=subprocess.DEVNULL
             ).decode().strip().splitlines()
+            print(f"🟢 Remote branches found: {remote_branches}")  # Debugging
             # Heuristic: prefer 'main', otherwise try 'master'
             if 'origin/main' in remote_branches:
                 return 'main'
@@ -44,9 +46,10 @@ def get_upstream_branch():
             ['git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'],
             stderr=subprocess.DEVNULL  # Suppress Git error messages
         ).decode().strip()
+        print(f"🟢 Upstream branch found: {upstream_branch}")  # Debugging
         return upstream_branch
     except subprocess.CalledProcessError:
-        # If no upstream is set, return None
+        print(f"⚠️ Warning: No upstream branch found for the current branch.")
         return None
 
 def check_for_unpushed_commits():
@@ -72,11 +75,14 @@ def check_for_unpushed_commits():
                 return None
 
         # Check for unpushed commits
+        print(f"🟢 Comparing with branch: {compare_branch}")  # Debugging
         unpushed_commits = subprocess.check_output(['git', 'log', f'{compare_branch}..HEAD']).decode().strip()
         
         if unpushed_commits:
+            print(f"🟢 Unpushed commits found.")  # Debugging
             return unpushed_commits
         else:
+            print(f"🟢 No unpushed commits.")  # Debugging
             return None  # No unpushed commits
 
     except subprocess.CalledProcessError as e:
